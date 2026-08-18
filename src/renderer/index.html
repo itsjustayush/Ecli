@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0b12" />
+  <title>Ecli — your little orbit</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="app-shell" aria-label="Ecli desktop pet">
+    <header class="topbar drag-region">
+      <div class="brand no-drag">
+        <div class="brand-mark" aria-hidden="true"><span></span><span></span></div>
+        <div>
+          <div class="eyebrow">YOUR LITTLE ORBIT</div>
+          <h1>Ecli</h1>
+        </div>
+      </div>
+      <div class="top-actions no-drag">
+        <span class="presence-dot"></span>
+        <span id="presence-label">online</span>
+        <button class="icon-button" id="settings-button" title="Open settings" aria-label="Open settings">☼</button>
+        <button class="icon-button" id="hide-button" title="Hide Ecli" aria-label="Hide Ecli">×</button>
+      </div>
+    </header>
+
+    <section class="hero-panel">
+      <div class="status-line">
+        <div>
+          <div class="section-kicker">CURRENTLY</div>
+          <div class="status-title" id="mood-title">orbiting quietly</div>
+        </div>
+        <div class="mood-chip" id="mood-chip">CALM</div>
+      </div>
+
+      <div class="scene" id="scene" aria-label="Ecli character. Drag to move, click to interact.">
+        <div class="star-field" aria-hidden="true"></div>
+        <div class="orbit orbit-a" aria-hidden="true"></div>
+        <div class="orbit orbit-b" aria-hidden="true"></div>
+        <div class="comet comet-a" aria-hidden="true"></div>
+        <div class="comet comet-b" aria-hidden="true"></div>
+        <div class="floating-note" id="floating-note" hidden></div>
+
+        <div class="pet-wrap" id="pet-wrap" tabindex="0" role="button" aria-label="Ecli. Click to interact or drag to move.">
+          <div class="pet-spark spark-1">✦</div>
+          <div class="pet-spark spark-2">·</div>
+          <div class="pet-spark spark-3">✧</div>
+          <svg class="pet" id="pet-svg" viewBox="0 0 220 220" role="img" aria-label="Ecli, a tiny space pet">
+            <defs>
+              <linearGradient id="bodyGradient" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#f5f1ff" />
+                <stop offset="0.54" stop-color="#d7d2ff" />
+                <stop offset="1" stop-color="#9da3ff" />
+              </linearGradient>
+              <linearGradient id="islandGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#3c426e" />
+                <stop offset="1" stop-color="#171a35" />
+              </linearGradient>
+              <filter id="glow"><feGaussianBlur stdDeviation="3.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+            <g class="pet-shadow"><ellipse cx="110" cy="188" rx="70" ry="11" /></g>
+            <g class="island-art">
+              <path d="M48 160c9-17 38-27 66-27s58 10 67 27l-14 27H63z" fill="url(#islandGradient)" stroke="#7781c5" stroke-width="2" />
+              <path d="M57 158c13-12 34-18 56-18 27 0 48 7 61 18-17 7-36 10-61 10-22 0-41-3-56-10z" fill="#5c67a8" stroke="#aab3ff" stroke-width="2" />
+              <path d="M67 177h8M88 181h12M145 177h8M121 184h10" stroke="#8993e5" stroke-width="3" stroke-linecap="round" opacity=".65" />
+              <circle cx="76" cy="151" r="3" fill="#d8d4ff" /><circle cx="148" cy="153" r="2" fill="#d8d4ff" />
+            </g>
+            <g class="pet-body" id="pet-body">
+              <path class="pet-ear" d="M69 84 70 42c1-8 8-10 14-3l22 27z" fill="url(#bodyGradient)" stroke="#ffffff" stroke-width="3" />
+              <path class="pet-ear-inner" d="m75 72 1-21c1-4 4-4 7-1l12 15z" fill="#b2a9ff" />
+              <path class="pet-ear" d="m151 84-1-42c-1-8-8-10-14-3l-22 27z" fill="url(#bodyGradient)" stroke="#ffffff" stroke-width="3" />
+              <path class="pet-ear-inner" d="m145 72-1-21c-1-4-4-4-7-1l-12 15z" fill="#b2a9ff" />
+              <path d="M67 92c0-26 19-44 43-44s43 18 43 44v42c0 27-18 40-43 40s-43-13-43-40z" fill="url(#bodyGradient)" stroke="#ffffff" stroke-width="3" />
+              <path class="pet-patch" d="M71 89c8-18 19-29 33-32v40c-9 3-19 8-27 17-4-7-6-15-6-25z" fill="#888fe9" opacity=".72" />
+              <path class="pet-patch" d="M119 139c14-8 24-6 34-1-2 13-7 22-17 27-7-7-12-15-17-26z" fill="#888fe9" opacity=".72" />
+              <g class="face">
+                <g class="eye eye-left"><ellipse cx="89" cy="103" rx="10" ry="13" fill="#171a35" /><ellipse class="pupil" cx="91" cy="101" rx="4" ry="6" fill="#ffffff" /></g>
+                <g class="eye eye-right"><ellipse cx="131" cy="103" rx="10" ry="13" fill="#171a35" /><ellipse class="pupil" cx="133" cy="101" rx="4" ry="6" fill="#ffffff" /></g>
+                <path class="brow brow-left" d="M81 83q9-7 17 0" fill="none" stroke="#777ccb" stroke-width="3" stroke-linecap="round" />
+                <path class="brow brow-right" d="M123 83q9-7 17 0" fill="none" stroke="#777ccb" stroke-width="3" stroke-linecap="round" />
+                <path class="mouth" d="M105 122q5 5 10 0" fill="none" stroke="#4f5795" stroke-width="3" stroke-linecap="round" />
+              </g>
+              <path class="belly-star" d="m110 139 2.5 6 6.5.5-5 4.3 1.5 6.4-5.5-3.5-5.5 3.5 1.5-6.4-5-4.3 6.5-.5z" fill="#737ad9" opacity=".9" />
+              <path class="arm arm-left" d="M72 128q-16 13-3 26" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" />
+              <path class="arm arm-right" d="M148 128q16 13 3 26" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" />
+              <path class="leg leg-left" d="M88 169q-2 13 7 18" fill="none" stroke="#ffffff" stroke-width="9" stroke-linecap="round" />
+              <path class="leg leg-right" d="M132 169q2 13-7 18" fill="none" stroke="#ffffff" stroke-width="9" stroke-linecap="round" />
+            </g>
+            <g class="thinking-stars" aria-hidden="true"><circle cx="169" cy="76" r="4"/><circle cx="181" cy="63" r="6"/><circle cx="195" cy="47" r="8"/></g>
+            <g class="steam" aria-hidden="true"><path d="M88 44q-8-12 3-22"/><path d="M110 39q-7-14 4-25"/><path d="M132 44q-5-12 6-21"/></g>
+          </svg>
+        </div>
+        <div class="scene-caption">drag me around · tap to say hi</div>
+      </div>
+
+      <div class="quick-actions no-drag">
+        <button class="action-button primary" id="snack-button"><span class="action-icon">✦</span><span>snack</span></button>
+        <button class="action-button" id="play-button"><span class="action-icon">↯</span><span>play</span></button>
+        <button class="action-button" id="sleep-button"><span class="action-icon">☾</span><span>sleep</span></button>
+      </div>
+    </section>
+
+    <section class="dashboard-grid">
+      <article class="mini-card needs-card">
+        <div class="card-heading"><div><div class="section-kicker">ECLI’S NEEDS</div><h2>little signals</h2></div><span class="mini-status" id="needs-status">steady</span></div>
+        <div class="need-row"><span>energy</span><div class="meter"><i id="energy-meter"></i></div><strong id="energy-value">78</strong></div>
+        <div class="need-row"><span>curiosity</span><div class="meter purple"><i id="curiosity-meter"></i></div><strong id="curiosity-value">64</strong></div>
+        <div class="need-row"><span>coziness</span><div class="meter peach"><i id="cozy-meter"></i></div><strong id="cozy-value">82</strong></div>
+      </article>
+      <article class="mini-card timer-card">
+        <div class="card-heading"><div><div class="section-kicker">FOCUS ORBIT</div><h2 id="timer-label">25:00 focus</h2></div><span class="timer-orbit">◌</span></div>
+        <div class="timer-display" id="timer-display">25:00</div>
+        <div class="timer-progress"><i id="timer-progress"></i></div>
+        <div class="timer-actions"><button class="text-button" id="timer-toggle">start timer</button><button class="text-button muted" id="timer-reset">reset</button></div>
+      </article>
+    </section>
+
+    <section class="bottom-row">
+      <div class="reminder-strip" id="reminder-strip">
+        <div class="reminder-icon">◒</div>
+        <div class="reminder-copy"><strong id="reminder-title">stretch orbit</strong><span id="reminder-copy">next nudge in 45 min</span></div>
+        <button class="round-button" id="reminder-button" title="Open reminders" aria-label="Open reminders">+</button>
+      </div>
+      <div class="activity-line"><span class="live-dot"></span><span id="activity-text">Ecli is listening locally · no telemetry</span></div>
+    </section>
+
+    <aside class="settings-drawer" id="settings-drawer" aria-hidden="true">
+      <div class="drawer-header"><div><div class="section-kicker">PERSONALIZE</div><h2>your orbit</h2></div><button class="icon-button" id="close-settings" aria-label="Close settings">×</button></div>
+      <label class="setting-row"><span>accent color</span><input id="accent-input" type="color" value="#9da3ff" /></label>
+      <label class="setting-row"><span>attention frequency</span><input id="attention-input" type="range" min="1" max="5" value="3" /></label>
+      <label class="setting-row switch-row"><span>always on top</span><input id="top-input" type="checkbox" checked /><span class="switch-ui"></span></label>
+      <label class="setting-row switch-row"><span>sound effects</span><input id="sound-input" type="checkbox" checked /><span class="switch-ui"></span></label>
+      <label class="setting-row switch-row"><span>environment reactions</span><input id="context-input" type="checkbox" checked /><span class="switch-ui"></span></label>
+      <div class="drawer-divider"></div>
+      <div class="section-kicker">FIXED NOTE</div>
+      <div class="note-editor"><input id="note-input" maxlength="48" placeholder="e.g. ship the thing" /><button id="note-save">pin</button></div>
+      <div class="privacy-note"><span>◈</span><span>Signals are sampled locally and lightly. Ecli never records keystrokes, screenshots, audio, or page content.</span></div>
+      <div class="drawer-footer"><span>ecli v0.1 · made for gentle focus</span><button class="text-button" id="clear-note">unpin note</button></div>
+    </aside>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="./app.js"></script>
+</body>
+</html>
