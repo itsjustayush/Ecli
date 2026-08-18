@@ -36,12 +36,12 @@ npm run check
 
 ## Option 2: Run the Windows portable app
 
-If you use Windows, download **`Ecli 0.1.1.exe`** from the [v0.1.1 Releases page](https://github.com/itsjustayush/Ecli/releases/tag/v0.1.1). This is a portable Windows application, so no installation wizard is required:
+If you use Windows, download **`Ecli 0.1.2.exe`** from the [v0.1.2 Releases page](https://github.com/itsjustayush/Ecli/releases/tag/v0.1.2). This is a portable Windows application, so no installation wizard is required:
 
-1. Download `Ecli 0.1.1.exe`.
+1. Download `Ecli 0.1.2.exe`.
 2. Open your Downloads folder.
 3. Double-click the file.
-4. If Windows SmartScreen appears, choose **More info**, verify that the file is named `Ecli 0.1.1.exe`, and choose **Run anyway** only if you intentionally downloaded it from the official Ecli Releases page.
+4. If Windows SmartScreen appears, choose **More info**, verify that the file is named `Ecli 0.1.2.exe`, and choose **Run anyway** only if you intentionally downloaded it from the official Ecli Releases page.
 5. Ecli will open as a floating desktop pet.
 
 The Windows portable build stores its settings locally and can be moved to another folder. To remove it, close Ecli and delete the `.exe` file. Windows may show a security warning because this first build is not code-signed yet; future releases should use a certificate for a smoother installation experience.
