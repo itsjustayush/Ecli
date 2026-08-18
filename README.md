@@ -2,32 +2,126 @@
 
 Ecli is a locally downloadable desktop pet inspired by the interaction vocabulary of [Comnyang’s public motion page](https://comnyang.com/en#motions), but implemented with original SVG artwork, a distinct space-island concept, and a privacy-first local runtime.
 
-## Included in this build
+## What is in the repository
 
-Ecli has a persistent always-on-top desktop window, bounded drag-to-move behavior, eye-following, click-to-pet interaction, snack/play/sleep actions, expressive SVG/CSS motion states, needs meters, local persistence, a 25-minute focus orbit, stretch and water reminders, a pinned note, configurable accent color, attention frequency, sound effects, always-on-top behavior, and a local environment-reaction switch.
+The repository contains the Electron source, renderer UI, original SVG/CSS character art, local state and reminder logic, Linux packaging configuration, and the GitHub Releases update client. The current project is configured for Linux x64 packaging. The same Electron source can later be packaged for macOS and Windows on their native build runners.
 
-The environment layer is intentionally conservative. It can react to local idle/battery context and to an explicit local activity signal. It does not capture or store keystrokes, screenshots, audio, browser contents, URLs, or AI conversation contents. Keyboard typing is observed only as an in-memory event count to trigger a kneading/overheat animation; individual key values are never stored.
+| Path | Purpose |
+|---|---|
+| `src/main.js` | Electron window, bounded dragging, local context signals, activity bridge, and updater |
+| `src/preload.js` | Secure renderer bridge with no Node.js access in the UI |
+| `src/renderer/index.html` | Companion UI structure and original inline SVG mascot |
+| `src/renderer/styles.css` | Space-island visual system and motion states |
+| `src/renderer/app.js` | Needs, timers, reminders, interactions, local persistence, and reactions |
+| `package.json` | Scripts, packaging settings, and GitHub Releases update provider |
 
-## Run from source
+## Option 1: Run from source
+
+Use this route when developing or editing Ecli.
 
 ```bash
+git clone https://github.com/itsjustayush/Ecli.git
+cd Ecli
 npm install
 npm start
 ```
 
-## Build a local distributable
+You need Node.js and npm installed. `npm install` installs Electron, Electron Builder, and the updater client. `npm start` opens the desktop pet in development mode. Development mode does not attempt to update itself from GitHub Releases.
+
+To check the source syntax without opening the window:
+
+```bash
+npm run check
+```
+
+## Option 2: Run the Linux AppImage
+
+Download the latest `Ecli-<version>.AppImage` from the repository’s [Releases page](https://github.com/itsjustayush/Ecli/releases). Then run:
+
+```bash
+chmod +x Ecli-0.1.0.AppImage
+./Ecli-0.1.0.AppImage
+```
+
+On some Linux desktop environments, you may also be able to double-click the file after enabling its executable permission. The AppImage is the preferred user-facing format because it bundles Electron and does not require a separate Node.js installation.
+
+If Linux blocks the launch because of a FUSE policy, try:
+
+```bash
+./Ecli-0.1.0.AppImage --appimage-extract-and-run
+```
+
+## Option 3: Run the unpacked Linux build
+
+Download and extract `Ecli-linux-x64.zip`, then launch the executable inside the extracted `linux-unpacked` directory:
+
+```bash
+unzip Ecli-linux-x64.zip
+cd linux-unpacked
+./Ecli
+```
+
+## Build locally
+
+To generate the unpacked Linux build:
 
 ```bash
 npm run dist
 ```
 
-The `dist/` folder contains the unpacked Linux build. To produce an AppImage:
+To generate an AppImage:
 
 ```bash
 npm run dist:appimage
 ```
 
-The current packaging target is Linux. The Electron project structure is ready for adding macOS and Windows targets on their native build runners.
+Build outputs are written to `dist/`. Do not commit `node_modules/` or `dist/` to the source branch; publish the AppImage and other large binaries as GitHub Release assets instead.
+
+## How automatic updates work
+
+Ecli uses GitHub Releases as its update channel. When a packaged AppImage starts, it checks the latest public GitHub Release. It does not update merely because someone pushes a commit to `main`; a new release must be created with a higher semantic version and a newly built AppImage attached.
+
+The update flow is intentionally user-controlled:
+
+1. Ecli checks for a newer release in the background.
+2. If one exists, a small `update <version>` control appears in the header.
+3. Clicking it downloads the release asset.
+4. After the download completes, the control changes to `restart to update`.
+5. Clicking that control restarts Ecli into the new version.
+
+The updater downloads only the release artifact configured by Electron Builder. It does not execute arbitrary repository files, run source code from `main`, or silently replace the app without the user’s action.
+
+## Publishing a new version
+
+Update the version in `package.json`, commit the source changes, build the AppImage, and create a GitHub Release with a matching tag:
+
+```bash
+npm version patch
+npm run check
+npm run dist:appimage
+git push origin main --follow-tags
+gh release create "v$(node -p "require('./package.json').version")" \
+  dist/Ecli-$(node -p "require('./package.json').version").AppImage \
+  --title "Ecli $(node -p "require('./package.json').version")" \
+  --generate-notes
+```
+
+For a minor feature release, use `npm version minor` instead of `npm version patch`. For a breaking release, use `npm version major`. The tag must begin with `v`, such as `v0.2.0`, and the GitHub Release must contain the AppImage produced from that same version.
+
+For a fully automated release pipeline, add a GitHub Actions workflow that runs on a `v*` tag, executes `npm ci`, runs `npm run check`, builds the AppImage, and attaches `dist/Ecli-<version>.AppImage` to the release. That makes publishing repeatable while keeping local update behavior unchanged.
+
+## “Realtime” update expectations
+
+There are three different meanings of “realtime,” and they behave differently:
+
+| Desired behavior | Recommended mechanism | Result |
+|---|---|---|
+| Update when you launch Ecli | Startup update check | Works with the current updater implementation |
+| Notice a release while Ecli is already open | Periodic update check, such as every 10 minutes | Requires adding a timer around `autoUpdater.checkForUpdates()` |
+| Update immediately after a repository push | CI builds a release after the push, then Ecli checks that release | Requires a GitHub Actions release workflow; a raw commit is not a safe update artifact |
+| Keep a developer checkout synchronized with `main` | `git pull --rebase` followed by `npm install` and restart | Best for development, not for end users |
+
+The safe production model is **push code → CI builds signed distributables → GitHub Release is created → Ecli checks the release → user approves download and restart**. Pushing directly to `main` should not cause an installed desktop application to execute arbitrary source code.
 
 ## Optional local activity protocol
 
@@ -42,10 +136,10 @@ An external local helper may write a JSON file named `activity.json` inside Elec
 
 Supported state words include `thinking`, `agent`, `done`, `complete`, `success`, `music`, `listening`, `video`, `reel`, `short`, `coding`, `typing`, and `idle`. Ecli maps these to expressions such as thinking, happy completion, rhythm, peek mode, coding, and quiet idle. This protocol is opt-in and is not active unless a separate local integration writes the file.
 
-## Design notes
+## Privacy boundary
 
-The visual language uses a dark, low-contrast space canvas, orbital lines, sparse stars, small status chips, and a floating island. The character is an original SVG mascot rather than a copy of Comnyang’s artwork. Motion is CSS-driven and event-triggered, keeping idle CPU use low. Timers, reminders, settings, and needs are local to the app and persisted in browser storage.
+Ecli can use local idle and battery context, and it counts typing events only in memory to trigger a kneading/overheat animation. It never records or stores individual key values. It does not capture screenshots, microphone audio, browser contents, URLs, or AI conversation contents. The optional activity file accepts only a short state and label string.
 
 ## Roadmap
 
-Future versions can add native notification APIs, a small tray menu, importable skins, a proper reminder editor, platform-specific activity adapters, and signed cross-platform installers. Those additions should preserve the same local-only privacy boundary.
+Future versions can add native notification APIs, a small tray menu, importable skins, a proper reminder editor, platform-specific activity adapters, signed cross-platform installers, and a GitHub Actions release workflow. Those additions should preserve the same local-only privacy boundary.

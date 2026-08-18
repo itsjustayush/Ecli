@@ -29,6 +29,7 @@ let lastActivity = Date.now();
 let drag = null;
 let reminderKind = 'stretch';
 let reminderDueAt = Date.now() + 45 * 60 * 1000;
+let updateStatus = 'current';
 
 function persist() {
   localStorage.setItem('ecli-state', JSON.stringify({ ...state, timerSeconds: timerRemaining }));
@@ -274,6 +275,38 @@ function setDrawer(open) {
   $('#settings-drawer').setAttribute('aria-hidden', String(!open));
 }
 
+function handleUpdaterStatus(payload = {}) {
+  updateStatus = payload.status || 'current';
+  const button = $('#update-button');
+  if (updateStatus === 'available') {
+    button.hidden = false;
+    button.textContent = `update ${payload.version || ''}`.trim();
+  } else if (updateStatus === 'downloading') {
+    button.hidden = false;
+    button.textContent = `downloading ${payload.percent || 0}%`;
+  } else if (updateStatus === 'downloaded') {
+    button.hidden = false;
+    button.textContent = 'restart to update';
+    showToast(`Ecli ${payload.version || 'new version'} is ready.`);
+  } else if (updateStatus === 'error') {
+    button.hidden = true;
+  } else {
+    button.hidden = true;
+  }
+}
+
+async function handleUpdateButton() {
+  if (updateStatus === 'available') {
+    showToast('Downloading the Ecli update…');
+    await window.ecli?.downloadUpdate?.();
+  } else if (updateStatus === 'downloaded') {
+    await window.ecli?.installUpdate?.();
+  } else {
+    showToast('Checking for a new Ecli release…');
+    await window.ecli?.checkForUpdates?.();
+  }
+}
+
 function handleEnvironmentActivity(activity) {
   if (!state.context || !activity || typeof activity.state !== 'string') return;
   const stateName = activity.state.toLowerCase();
@@ -308,6 +341,7 @@ $('#timer-toggle').addEventListener('click', () => setTimerRunning(!timerRunning
 $('#timer-reset').addEventListener('click', () => { timerRemaining = 25 * 60; setTimerRunning(false); renderTimer(); persist(); showToast('Focus orbit reset.'); });
 $('#reminder-button').addEventListener('click', () => fireReminder(reminderKind === 'stretch' ? 'stretch' : 'water'));
 $('#settings-button').addEventListener('click', () => setDrawer(true));
+$('#update-button').addEventListener('click', handleUpdateButton);
 $('#close-settings').addEventListener('click', () => setDrawer(false));
 $('#hide-button').addEventListener('click', () => window.ecli?.hideWindow?.());
 $('#accent-input').addEventListener('input', (event) => setAccent(event.target.value));
@@ -356,3 +390,4 @@ setInterval(() => {
 }, 15000);
 
 window.ecli?.onEnvironmentActivity?.(handleEnvironmentActivity);
+window.ecli?.onUpdaterStatus?.(handleUpdaterStatus);

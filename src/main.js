@@ -1,10 +1,38 @@
 const { app, BrowserWindow, ipcMain, screen, powerMonitor, nativeTheme } = require('electron');
+const { autoUpdater } = require('electron-updater');
 const fs = require('node:fs');
 const path = require('node:path');
 
 let mainWindow;
 let activityTimer;
+let updateCheckTimer;
 let lastActivitySignature = '';
+
+function sendUpdateStatus(status, payload = {}) {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send('updater:status', { status, ...payload });
+  }
+}
+
+function setupAutoUpdater() {
+  if (!app.isPackaged) {
+    sendUpdateStatus('development');
+    return;
+  }
+  autoUpdater.autoDownload = false;
+  autoUpdater.autoInstallOnAppQuit = true;
+  autoUpdater.on('checking-for-update', () => sendUpdateStatus('checking'));
+  autoUpdater.on('update-available', (info) => sendUpdateStatus('available', { version: info.version }));
+  autoUpdater.on('update-not-available', (info) => sendUpdateStatus('current', { version: info.version }));
+  autoUpdater.on('download-progress', (progress) => sendUpdateStatus('downloading', { percent: Math.round(progress.percent) }));
+  autoUpdater.on('update-downloaded', (info) => sendUpdateStatus('downloaded', { version: info.version }));
+  autoUpdater.on('error', (error) => sendUpdateStatus('error', { message: error.message }));
+  autoUpdater.checkForUpdates().catch((error) => sendUpdateStatus('error', { message: error.message }));
+  updateCheckTimer = setInterval(() => {
+    autoUpdater.checkForUpdates().catch((error) => sendUpdateStatus('error', { message: error.message }));
+  }, 10 * 60 * 1000);
+}
+
 
 function clampWindowPosition(x, y) {
   const display = screen.getDisplayNearestPoint({ x, y });
@@ -50,6 +78,7 @@ function createWindow() {
 
   mainWindow.on('closed', () => {
     clearInterval(activityTimer);
+    clearInterval(updateCheckTimer);
     mainWindow = null;
   });
 
@@ -76,6 +105,32 @@ function createWindow() {
 
 app.whenReady().then(() => {
   createWindow();
+  setupAutoUpdater();
+
+  ipcMain.handle('updater:check', async () => {
+    if (!app.isPackaged) return { status: 'development' };
+    try {
+      await autoUpdater.checkForUpdates();
+      return { status: 'checking' };
+    } catch (error) {
+      sendUpdateStatus('error', { message: error.message });
+      return { status: 'error', message: error.message };
+    }
+  });
+  ipcMain.handle('updater:download', async () => {
+    if (!app.isPackaged) return { status: 'development' };
+    try {
+      await autoUpdater.downloadUpdate();
+      return { status: 'downloading' };
+    } catch (error) {
+      sendUpdateStatus('error', { message: error.message });
+      return { status: 'error', message: error.message };
+    }
+  });
+  ipcMain.handle('updater:install', () => {
+    if (app.isPackaged) autoUpdater.quitAndInstall(false, true);
+    return { status: 'installing' };
+  });
 
   ipcMain.handle('window:get-position', () => mainWindow?.getPosition() ?? [0, 0]);
   ipcMain.handle('window:move', (_event, { x, y }) => {

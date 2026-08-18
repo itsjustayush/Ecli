@@ -40,6 +40,8 @@ button:focus-visible, input:focus-visible, .pet-wrap:focus-visible { outline: 2p
 .eyebrow, .section-kicker { color: var(--quiet); font-size: 9px; letter-spacing: .17em; font-weight: 800; text-transform: uppercase; }
 h1, h2, p { margin: 0; } h1 { font-size: 17px; line-height: 1; letter-spacing: -.03em; } h2 { font-size: 14px; letter-spacing: -.02em; margin-top: 3px; }
 .top-actions { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 10px; }
+.update-pill { border: 1px solid rgba(127,224,183,.35); border-radius: 99px; padding: 5px 8px; background: rgba(127,224,183,.11); color: var(--green); font-size: 8px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.update-pill:hover { background: rgba(127,224,183,.24); }
 .presence-dot, .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 12px rgba(127,224,183,.8); }
 .icon-button { display: inline-grid; place-items: center; width: 27px; height: 27px; border: 1px solid transparent; border-radius: 9px; background: transparent; color: var(--muted); font-size: 17px; line-height: 1; transition: .2s ease; }
 .icon-button:hover { color: var(--text); background: rgba(255,255,255,.08); border-color: var(--line); }

@@ -1,6 +1,6 @@
 {
   "name": "ecli-desktop-pet",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Ecli, a privacy-first space companion for your desktop.",
   "main": "src/main.js",
   "author": "Ecli",
@@ -15,10 +15,16 @@
   },
   "devDependencies": {
     "electron": "^37.0.0",
-    "electron-builder": "^26.0.12"
+    "electron-builder": "^26.0.12",
+    "electron-updater": "^6.6.2"
   },
   "build": {
     "appId": "com.ecli.desktop",
+    "publish": {
+      "provider": "github",
+      "owner": "itsjustayush",
+      "repo": "Ecli"
+    },
     "productName": "Ecli",
     "files": [
       "src/**/*",
@@ -26,7 +32,10 @@
       "README.md"
     ],
     "linux": {
-      "target": ["dir", "AppImage"],
+      "target": [
+        "dir",
+        "AppImage"
+      ],
       "category": "Utility",
       "syncDesktopName": true
     }

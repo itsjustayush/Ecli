@@ -6,6 +6,15 @@ contextBridge.exposeInMainWorld('ecli', {
   toggleAlwaysOnTop: (value) => ipcRenderer.invoke('window:toggle-always-on-top', value),
   hideWindow: () => ipcRenderer.invoke('window:hide'),
   getSystemContext: () => ipcRenderer.invoke('system:get-context'),
+  checkForUpdates: () => ipcRenderer.invoke('updater:check'),
+  downloadUpdate: () => ipcRenderer.invoke('updater:download'),
+  installUpdate: () => ipcRenderer.invoke('updater:install'),
+  onUpdaterStatus: (callback) => {
+    if (typeof callback !== 'function') return () => {};
+    const listener = (_event, status) => callback(status);
+    ipcRenderer.on('updater:status', listener);
+    return () => ipcRenderer.removeListener('updater:status', listener);
+  },
   onEnvironmentActivity: (callback) => {
     if (typeof callback !== 'function') return () => {};
     const listener = (_event, activity) => callback(activity);
