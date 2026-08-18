@@ -4,7 +4,7 @@ Ecli is a locally downloadable desktop pet inspired by the interaction vocabular
 
 ## What is in the repository
 
-The repository contains the Electron source, renderer UI, original SVG/CSS character art, local state and reminder logic, Linux packaging configuration, and the GitHub Releases update client. The current project is configured for Linux x64 packaging. The same Electron source can later be packaged for macOS and Windows on their native build runners.
+The repository contains the Electron source, renderer UI, original SVG/CSS character art, local state and reminder logic, Linux packaging configuration, and the GitHub Releases update client. The current project supports Linux x64 and Windows x64 packaging. The same Electron source can later be packaged for macOS on a native macOS build runner.
 
 | Path | Purpose |
 |---|---|
@@ -34,7 +34,19 @@ To check the source syntax without opening the window:
 npm run check
 ```
 
-## Option 2: Run the Linux AppImage
+## Option 2: Run the Windows portable app
+
+If you use Windows, download **`Ecli 0.1.1.exe`** from the [v0.1.1 Releases page](https://github.com/itsjustayush/Ecli/releases/tag/v0.1.1). This is a portable Windows application, so no installation wizard is required:
+
+1. Download `Ecli 0.1.1.exe`.
+2. Open your Downloads folder.
+3. Double-click the file.
+4. If Windows SmartScreen appears, choose **More info**, verify that the file is named `Ecli 0.1.1.exe`, and choose **Run anyway** only if you intentionally downloaded it from the official Ecli Releases page.
+5. Ecli will open as a floating desktop pet.
+
+The Windows portable build stores its settings locally and can be moved to another folder. To remove it, close Ecli and delete the `.exe` file. Windows may show a security warning because this first build is not code-signed yet; future releases should use a certificate for a smoother installation experience.
+
+## Option 3: Run the Linux AppImage
 
 Download the latest `Ecli-<version>.AppImage` from the repository’s [Releases page](https://github.com/itsjustayush/Ecli/releases). Then run:
 
@@ -51,7 +63,7 @@ If Linux blocks the launch because of a FUSE policy, try:
 ./Ecli-0.1.0.AppImage --appimage-extract-and-run
 ```
 
-## Option 3: Run the unpacked Linux build
+## Option 4: Run the unpacked Linux build
 
 Download and extract `Ecli-linux-x64.zip`, then launch the executable inside the extracted `linux-unpacked` directory:
 
@@ -62,6 +74,12 @@ cd linux-unpacked
 ```
 
 ## Build locally
+
+To generate the Windows portable executable:
+
+```bash
+npx electron-builder --win portable --publish never
+```
 
 To generate the unpacked Linux build:
 
